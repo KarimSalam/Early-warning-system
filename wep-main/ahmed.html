@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Early Warning System</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #2ecc71;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo img {
+            height: 50px;
+            margin-right: 15px;
+        }
+        
+        .logo h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a:hover {
+            color: var(--light-color);
+            transform: translateY(-2px);
+        }
+        
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .map-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+        
+        #floodMap {
+            height: 600px;
+            width: 100%;
+        }
+        
+        .map-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .map-header h1 {
+            margin: 0;
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+        }
+        
+        .map-header p {
+            margin: 0.5rem 0 0;
+            color: #7f8c8d;
+        }
+        
+        .year-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .year-btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 30px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .year-btn:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .year-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .flood-legend {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+        }
+        
+        .flood-legend h4 {
+            margin: 0 0 10px;
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .year-filter {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="#" class="logo">
+                <img src="images/EARLY WARNING SYSTEM without background.png" alt="Flood Warning System Logo">
+                <h2>FloodAlert</h2>
+            </a>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="Data store.html"><i class="fas fa-database"></i> Data</a></li>
+                <li><a href="notices.html"><i class="fas fa-bell"></i> Alerts</a></li>
+                <li><a href="UPDATES.html"><i class="fas fa-sync-alt"></i> Updates</a></li>
+             
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="map-container">
+            <div class="map-header">
+                <h1>Historical Flood Events Map</h1>
+                <p>Visualizing flood incidents from the past 5 years with severity levels</p>
+            </div>
+            
+            <div class="year-filter">
+                <button class="year-btn active" data-year="all">All Years</button>
+                <button class="year-btn" data-year="2023">2023</button>
+                <button class="year-btn" data-year="2022">2022</button>
+                <button class="year-btn" data-year="2021">2021</button>
+                <button class="year-btn" data-year="2020">2020</button>
+                <button class="year-btn" data-year="2019">2019</button>
+            </div>
+            
+            <div id="floodMap"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('floodMap').setView([26.8206, 30.8025], 6); // Center on Egypt
+        
+        // Add base map layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Sample flood data (replace with real data)
+        const floodData = {
+            2023: [
+                {
+                    name: "Cairo Flood Event",
+                    coords: [[30.0444, 31.2357]],
+                    severity: 'high',
+                    date: "August 15, 2023",
+                    damage: "500 homes affected",
+                    rainfall: "120mm in 24 hours"
+                },
+                {
+                    name: "Alexandria Coastal Flood",
+                    coords: [[31.2058, 29.9246]],
+                    severity: 'medium',
+                    date: "October 22, 2023",
+                    damage: "Road closures, 3 injuries"
+                }
+            ],
+            2022: [
+                {
+                    name: "Luxor Flash Flood",
+                    coords: [[25.6872, 32.6396], ],
+                    severity: 'high',
+                    date: "September 5, 2022",
+                    damage: "200 families evacuated"
+                }
+            ],
+            2021: [
+                {
+                    name: "Aswan Dam Overflow",
+                    coords: [[24.0889, 32.8998]],
+                    severity: 'medium',
+                    date: "July 12, 2021",
+                    damage: "Agricultural land flooded"
+                }
+            ]
+            // Add more years as needed
+        };
+
+        // Create layer groups for each year
+        const yearLayers = {};
+        Object.keys(floodData).forEach(year => {
+            yearLayers[year] = L.layerGroup();
+            
+            floodData[year].forEach(flood => {
+                let color, radius;
+                if (flood.severity === 'high') {
+                    color = '#e74c3c';
+                    radius = 15;
+                } else if (flood.severity === 'medium') {
+                    color = '#f39c12';
+                    radius = 10;
+                } else {
+                    color = '#f1c40f';
+                    radius = 8;
+                }
+                
+                if (flood.coords.length > 1) {
+                    // Create polygon for area floods
+                    L.polygon(flood.coords, {
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.4,
+                        weight: 2
+                    })
+                    .bindPopup(`
+                        <div style="min-width: 250px">
+                            <h3 style="margin: 0 0 10px; color: ${color}">${flood.name}</h3>
+                            <p><strong>Date:</strong> ${flood.date}</p>
+                            <p><strong>Severity:</strong> <span style="color: ${color}">${flood.severity.charAt(0).toUpperCase() + flood.severity.slice(1)}</span></p>
+                            <p><strong>Damage:</strong> ${flood.damage}</p>
+                            ${flood.rainfall ? `<p><strong>Rainfall:</strong> ${flood.rainfall}</p>` : ''}
+                        </div>
+                    `)
+                    .addTo(yearLayers[year]);
+                } else {
+                    // Create marker for point floods
+                    L.circleMarker(flood.coords[0], {
+                        radius: radius,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.7,
+                        weight: 1
+                    })
+                    .bindPopup(`
+                        <div style="min-width: 200px">
+                            <h3 style="margin: 0 0 10px; color: ${color}">${flood.name}</h3>
+                            <p><strong>Date:</strong> ${flood.date}</p>
+                            <p><strong>Damage:</strong> ${flood.damage}</p>
+                        </div>
+                    `)
+                    .addTo(yearLayers[year]);
+                }
+            });
+        });
+
+        // Add year filter functionality
+        document.querySelectorAll('.year-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const year = this.dataset.year;
+                
+                // Remove all layers first
+                Object.values(yearLayers).forEach(layer => map.removeLayer(layer));
+                
+                // Add the selected layer
+                if (year === 'all') {
+                    Object.values(yearLayers).forEach(layer => layer.addTo(map));
+                } else if (yearLayers[year]) {
+                    yearLayers[year].addTo(map);
+                }
+            });
+        });
+
+        // Add legend
+        const legend = L.control({position: 'bottomright'});
+        legend.onAdd = function(map) {
+            const div = L.DomUtil.create('div', 'flood-legend');
+            div.innerHTML = `
+                <h4>Flood Severity</h4>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #e74c3c"></span>
+                    <span>High Severity</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #f39c12"></span>
+                    <span>Medium Severity</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #f1c40f"></span>
+                    <span>Low Severity</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.8em; color: #7f8c8d">
+                    <i class="fas fa-info-circle"></i> Click on areas for details
+                </div>
+            `;
+            return div;
+        };
+        legend.addTo(map);
+
+        // Show all data initially
+        Object.values(yearLayers).forEach(layer => layer.addTo(map));
+        
+        // Mobile menu toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('show');
+        }); 
+        
+    </script>
+</body>
+</html>

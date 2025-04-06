@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاير سنسور فلور 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        /* الناف بار */
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+        }
+        /* المحتوى الرئيسي */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 0 20px;
+        }
+        .image {
+            width: 50%;
+            height: 500px;
+            background-color: #ddd;
+            border: 2px solid #ccc;
+            margin-left: 20px;
+            background-image: url(images/photo_2025-03-17_04-50-46.jpg );
+            background-size: cover;
+            background-position: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .content {
+            flex: 1;
+            margin: 0 20px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            animation: slideIn 1s ease-in-out;
+        }
+        .data-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .data-box {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-radius: 10px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .data-box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #555;
+        }
+        .data-box p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        /* الأنيميشنات */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الناف بار -->
+    <div class="navbar">
+        <a href="floor1.html">floor 1</a>
+        <a href="floor2.html">floor 2</a>
+        <a href="floor3.html">floor 3</a>
+    </div>
+
+    <h1> FireSensor floor2</h1>
+ 
+
+    <div class="container">
+        <!-- الصورة على الجانب الأيمن -->
+        <div class="image"></div>
+
+        <!-- المحتوى في الجانب الأيسر -->
+        <div class="content">
+            <select id="sensor-select">
+                <option value="sensor1">sensor 1</option>
+                <option value="sensor2">sensor 2</option>
+                <option value="sensor3">sensor 3</option>
+            </select>
+
+            <div class="data-container">
+                <div class="data-box">
+                    <h3>TEMPERATURE</h3>
+                    <p id="temp1">--</p>
+                </div>
+                <div class="data-box">
+                    <h3>HUMIDITY</h3>
+                    <p id="temp2">--</p>
+                </div>
+                <div class="data-box">
+
+
+<h3>SMOKE LEVEL </h3>
+                    <p id="temp3">--</p>
+                </div>
+                <div class="data-box">
+                    <h3> CARBON MONOXIDE LEVEL</h3>
+                    <p id="temp4">--</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات درجات الحرارة لكل سنسور
+        const sensorData = {
+            sensor1: { temp1: 25, temp2: 30, temp3: 0, temp4: 8 },
+            sensor2: { temp1: 20, temp2: 27, temp3: 2, temp4: 6 },
+            sensor3: { temp1: 23, temp2: 29, temp3: 6, temp4: 2 }
+        };
+
+        // العناصر التي سيتم تحديثها
+        const temp1Element = document.getElementById('temp1');
+        const temp2Element = document.getElementById('temp2');
+        const temp3Element = document.getElementById('temp3');
+        const temp4Element = document.getElementById('temp4');
+        const selectElement = document.getElementById('sensor-select');
+
+        // وظيفة تحديث البيانات
+        function updateData() {
+            const selectedSensor = selectElement.value;
+            const data = sensorData[selectedSensor];
+
+            temp1Element.textContent = data.temp1 + "°C";
+            temp2Element.textContent = data.temp2 + "%";
+            temp3Element.textContent = data.temp3 + "";
+            temp4Element.textContent = data.temp4 + "";
+        }
+
+        // تحديث البيانات عند تغيير الاختيار
+        selectElement.addEventListener('change', updateData);
+
+        // تحديث البيانات عند تحميل الصفحة
+        window.onload = updateData;
+    </script>
+
+</body>
+</html>
