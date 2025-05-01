@@ -609,251 +609,42 @@ form button:hover {
 /*end buttons cards*/
 /************************************************************************************************************************************************/
 /*start map*/
-.eg_map {
-  position: relative;
-  width: 100%;
-
-
-
-  justify-content: center;
-  align-items: center;
-  left: 0PX;
-
-  bottom: -150px;
-
+#map { width: 500px;
+  height: 500px;
+  margin: 20px;
+  border: 2px solid #ccc;
+  z-index: 60;
 }
 
-svg path {
-  cursor: pointer;
-}
-
-svg path:hover {
-  fill: #4fa3ab;
-}
-
-.loader-shape-3 {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-}
-
-.loader-shape-3:after {
-  width: 30px;
-  height: 20px;
-  border-radius: 100%;
-  background-color: rgba(255, 255, 255, 0.2);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin-top: 15px;
-}
-
-.loader-shape-3:before {
+.device-marker {
+  background-color: red;
+  border-radius: 50%;
   width: 20px;
   height: 20px;
-  border-radius: 100% 100% 100% 0;
-  box-shadow: 0px 0px 0px 2px rgb(0, 0, 0);
-  animation: anm-SL-3-move 1s linear infinite;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-46deg);
-  margin-top: 20px;
+  animation: blink 1s infinite;
 }
 
-.loader-shape-3:before,
-.loader-shape-3:after {
-  position: absolute;
-  content: "";
-
-}
-
-@keyframes anm-SL-3-move {
+@keyframes blink {
   0% {
-    top: 0;
+      opacity: 1;
   }
 
   50% {
-    top: -5px;
+      opacity: 0;
   }
 
   100% {
-    top: 0;
+      opacity: 1;
   }
 }
 
-.center-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  cursor: pointer;
-  border: none;
-  background-color: transparent;
-
+.info-panel {
+  margin: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
-
-.center-body::after {
-  content: " flood";
-  width: fit-content;
-  height: fit-content;
-  position: absolute;
-  font-size: 15px;
-  color: rgb(0, 0, 0);
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.2s linear;
-  top: 115%;
-}
-
-.center-body:hover>.loader-shape-3 {
-  transform: scale(1.2);
-}
-
-.center-body:hover>.loader-shape-3 {
-  fill: rgb(177, 139, 189);
-}
-
-.center-body:hover::after {
-  visibility: visible;
-  opacity: 1;
-  top: 105%;
-}
-
-.on {
-  position: absolute;
-  left: 115px;
-  bottom: -240px;
-
-
-}
-
-.to {
-  position: absolute;
-  left: 500px;
-  bottom: -127px;
-
-
-}
-
-.th {
-  position: absolute;
-  left: 487px;
-  bottom: -145px;
-
-
-
-}
-
-.ta {
-  position: absolute;
-  left: 435px;
-  bottom: -105px;
-
-
-}
-
-.ts {
-  position: absolute;
-  left: 385px;
-  bottom: -110px;
-
-}
-
-.td {
-  position: absolute;
-  left: 375px;
-  bottom: -120px;
-
-}
-
-.tf {
-  position: absolute;
-  left: 315px;
-  bottom: -145px;
-
-
-
-}
-
-.tg {
-  position: absolute;
-  left: 330px;
-  bottom: -160px;
-
-
-
-}
-
-.tj {
-  position: absolute;
-  left: 410px;
-  bottom: -220px;
-
-
-
-}
-
-.tk {
-  position: absolute;
-  left: 499px;
-  bottom: -270px;
-
-
-
-}
-
-.tl {
-  position: absolute;
-  left: 565px;
-  bottom: -315px;
-
-
-
-
-}
-
-.tp {
-  position: absolute;
-  left: 555px;
-  bottom: -310px;
-}
-
-.to {
-  position: absolute;
-  left: 555px;
-  bottom: -375px;
-}
-
-.ti {
-  position: absolute;
-  left: 595px;
-  bottom: -455px;
-}
-
-.tu {
-  position: absolute;
-  left: 575px;
-  bottom: -446px;
-}
-
-.ty {
-  position: absolute;
-  left: 635px;
-  bottom: -570px;
-}
-
-.tt {
-  position: absolute;
-  left: 630px;
-  bottom: -560px;
-}
-
 /*end map*/
 /************************************************************************************************************************************************/
 /*footer*/

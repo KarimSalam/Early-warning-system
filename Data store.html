@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <title> Data Store</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+      color: #0d47a1;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0d47a1;
+      margin-bottom: 30px;
+      font-size: 32px;
+      letter-spacing: 1px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    #search, select, button {
+      padding: 10px 14px;
+      font-size: 15px;
+      border: 1px solid #64b5f6;
+      border-radius: 6px;
+      background-color: white;
+      color: #0d47a1;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    #search:focus, select:focus {
+      border-color: #1976d2;
+      box-shadow: 0 0 5px rgba(25, 118, 210, 0.5);
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #1976d2;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #0d47a1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #1565c0;
+      color: white;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f1f8ff;
+      cursor: pointer;
+    }
+
+    .low {
+      background-color: #e3f2fd;
+    }
+
+    .medium {
+      background-color: #bbdefb;
+    }
+
+    #map {
+      height: 420px;
+      border: 2px solid #90caf9;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Data Store</h1>
+
+  <div class="filters">
+    <input type="text" id="search" placeholder="Search by city...">
+    <select id="yearFilter">
+      <option value="">All Years</option>
+    </select>
+    <select id="levelFilter">
+      <option value="">All Levels</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+    </select>
+    <button id="resetBtn">Reset Filters</button>
+  </div>
+
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>City</th>
+        <th>Year</th>
+        <th>Cause</th>
+        <th>Impact</th>
+        <th>Level</th>
+        <th>Coordinates</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    const data = [
+      { city: "Cairo", latitude: 30.0444, longitude: 31.2357, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Alexandria", latitude: 31.2001, longitude: 29.9187, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" },
+      { city: "Hurghada", latitude: 27.2579, longitude: 33.8116, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Aswan", latitude: 24.0889, longitude: 32.8998, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" },
+      { city: "Asyut", latitude: 28.1099, longitude: 30.7503, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Sinai", latitude: 29.3102, longitude: 34.2595, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" },
+      { city: "Sinai", latitude: 29.3102, longitude: 34.2595, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Port Said", latitude: 31.2653, longitude: 32.3019, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" },
+      { city: "Giza", latitude: 30.0131, longitude: 31.2089, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Ismailia", latitude: 30.6043, longitude: 32.2723, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" },
+      { city: "Beni Suef", latitude: 28.8932, longitude: 31.1713, impact: "Major city floods, infrastructure damage", year: 2020, cause: "Heavy Rainfall", level: "Low" },
+      { city: "Mansoura", latitude: 31.0409, longitude: 31.3785, impact: "Coastal flooding, traffic disruptions", year: 2015, cause: "Storm Surge", level: "Medium" }
+    ];
+
+    const tbody = document.querySelector("#data-table tbody");
+    const searchInput = document.getElementById("search");
+    const yearFilter = document.getElementById("yearFilter");
+    const levelFilter = document.getElementById("levelFilter");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const map = L.map('map').setView([26.8206, 30.8025], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    let markerGroup = L.layerGroup().addTo(map);
+
+    const markerMap = {}; // Save markers by city
+
+    const years = [...new Set(data.map(d => d.year))].sort();
+    years.forEach(y => {
+      const opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      yearFilter.appendChild(opt);
+    });
+
+    function renderTable(filteredData) {
+      tbody.innerHTML = "";
+      markerGroup.clearLayers();
+      markerMap.clear;
+
+      filteredData.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.className = item.level.toLowerCase();
+
+        tr.innerHTML = `
+          <td>${item.city}</td>
+          <td>${item.year}</td>
+          <td>${item.cause}</td>
+          <td>${item.impact}</td>
+          <td>${item.level}</td>
+          <td>${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}</td>
+        `;
+        tbody.appendChild(tr);
+
+        const marker = L.marker([item.latitude, item.longitude])
+          .bindPopup(`<b>${item.city}</b><br>${item.impact}`);
+        markerGroup.addLayer(marker);
+
+        // Save marker for reference on row click
+        markerMap[item.city + item.latitude] = marker;
+
+        // 🎯 Zoom map to city when row is clicked
+        tr.addEventListener("click", () => {
+          map.setView([item.latitude, item.longitude], 10);
+          marker.openPopup();
+        });
+      });
+
+      if (filteredData.length === 1) {
+        map.setView([filteredData[0].latitude, filteredData[0].longitude], 9);
+      } else {
+        map.setView([26.8206, 30.8025], 5);
+      }
+    }
+
+    function applyFilters() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const yearVal = yearFilter.value;
+      const levelVal = levelFilter.value;
+
+      const filtered = data.filter(item => {
+        const matchCity = item.city.toLowerCase().includes(keyword);
+        const matchYear = yearVal === "" || item.year.toString() === yearVal;
+        const matchLevel = levelVal === "" || item.level === levelVal;
+        return matchCity && matchYear && matchLevel;
+      });
+
+      renderTable(filtered);
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    yearFilter.addEventListener("change", applyFilters);
+    levelFilter.addEventListener("change", applyFilters);
+
+    resetBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      yearFilter.value = "";
+      levelFilter.value = "";
+      renderTable(data);
+    });
+
+    // Initial render
+    renderTable(data);
+  </script>
+</body>
+</html>

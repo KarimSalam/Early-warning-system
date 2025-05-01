@@ -1,233 +1,62 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج الاتصال مع الخريطة</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="tel"],
-        input[type="email"],
-        input[type="url"],
-        textarea,
-        input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background: #45a049;
-        }
-        #map {
-            height: 300px;
-            width: 100%;
-            margin: 15px 0;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .success-message {
-            color: green;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
-        .location-info {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 4px;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 10px 0;
-        }
-    </style>
+    <meta name="viewport" content=
+        "width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="css/massage.css">
+    <title>massage</title>
 </head>
-<body>
-    <div class="container">
-        
-        <form id="contactForm" action="https://formsubmit.co/ttss39158@gmail.com" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="_subject" value="رسالة جديدة من النموذج">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_next" value="https://yourwebsite.com/thanks.html">
-            
-            <div class="form-group">
-                <label for="name">الاسم الكامل:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="phone">رقم التليفون:</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">البريد الإلكتروني:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="details">التفاصيل:</label>
-                <textarea id="details" name="details" required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="image">صورة (اختيارية):</label>
-                <input type="file" id="image" name="image" accept="image/*">
-            </div>
-            
-            <div class="form-group">
-                <label>موقعك الحالي:</label>
-                <div id="map"></div>
-                <div class="location-info">
-                    <p id="locationText">جاري تحديد موقعك...</p>
-                    <input type="hidden" id="latitude" name="latitude">
-                    <input type="hidden" id="longitude" name="longitude">
-                    <input type="hidden" id="address" name="address">
-                </div>
-            </div>
-            
-            <div class="loading" id="loading">
-                جاري إرسال البيانات...
-            </div>
-            
-            <button type="submit" id="submitBtn">إرسال</button>
-        </form>
-        
-        <div id="successMessage" class="success-message">
-            تم إرسال المعلومات بنجاح! شكرًا لتواصلك معنا.
-        </div>
-        
-        <div id="errorMessage" class="error-message">
-            حدث خطأ أثناء إرسال المعلومات. يرجى المحاولة مرة أخرى.
-        </div>
-    </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        // تهيئة الخريطة
-        let map = L.map('map').setView([0, 0], 2);
-        let marker = null;
-        let userLocation = null;
-        
-        // إضافة طبقة الخريطة
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        
-        // تحديد الموقع تلقائياً
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    
-                    // تحديث الخريطة لتركز على موقع المستخدم
-                    map.setView([userLocation.lat, userLocation.lng], 15);
-                    
-                    // إضافة علامة على الموقع
-                    marker = L.marker([userLocation.lat, userLocation.lng]).addTo(map)
-                        .bindPopup("موقعك الحالي").openPopup();
-                    
-                    // تحديث الحقول المخفية
-                    document.getElementById('latitude').value = userLocation.lat;
-                    document.getElementById('longitude').value = userLocation.lng;
-                    
-                    // الحصول على عنوان تقريبي
-                    getAddress(userLocation.lat, userLocation.lng);
-                },
-                function(error) {
-                    console.error("حدث خطأ في تحديد الموقع:", error);
-                    document.getElementById('locationText').textContent = "تعذر تحديد موقعك. يرجى التأكد من تفعيل خدمة الموقع.";
-                }
-            );
-        } else {
-            document.getElementById('locationText').textContent = "المتصفح لا يدعم خدمة تحديد الموقع.";
-        }
-        
-        // وظيفة للحصول على عنوان من الإحداثيات
-        function getAddress(lat, lng) {
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    const address = data.display_name || "عنوان غير معروف";
-                    document.getElementById('locationText').textContent = `موقعك: ${address}`;
-                    document.getElementById('address').value = address;
-                })
-                .catch(error => {
-                    console.error("حدث خطأ في جلب العنوان:", error);
-                    document.getElementById('locationText').textContent = `الإحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                    document.getElementById('address').value = `الإحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                });
-        }
-        
-        // إرسال النموذج
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
+<body>  
+
+<!--end navbar-->
+  
+    <form action="https://formsubmit.co/ttss39158@gmail.com" method="POST" class="form">
+    
+        <div class="flex">
+            <label>
+                <input class="input" name=" name" type="text" placeholder="" required="">
+                <span> name</span>
+            </label>
+    
+        </div>  
+                
+        <label>
+            <input class="input" name="email" type="email" placeholder="" required="">
+            <span>email</span>
+        </label> 
             
-            if (!userLocation) {
-                alert("الرجاء الانتظار حتى يتم تحديد موقعك");
-                e.preventDefault();
-                return;
-            }
+        <label>
+            <input class="input" placeholder="" name="contact UNMDER" type="tel" required="">
+            <span>contact number</span>
+        </label>
+        <label>
+            <textarea class="input01" name="massage" placeholder="" rows="3" required=""></textarea>
+            <span>message</span>
+        </label>
+         
+        <label  class="custum-file-upload" for="file" >
+            <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> </g></svg>
+            </div>
+            <div class="text">
+               <span>Click to upload image</span>
+               </div>
+               <input type="file"  name="file">
+            </label>
             
-            submitBtn.disabled = true;
-            loading.style.display = 'block';
-        });
-    </script>
+
+        <button href="#" class="fancy">
+          <span class="top-key"></span>
+          <span class="text">submit</span>
+          <span class="bottom-key-1"></span>
+          <span class="bottom-key-2"></span>
+        </button>
+    </form>
+
+     
 </body>
+
 </html>

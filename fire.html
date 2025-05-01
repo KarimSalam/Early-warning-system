@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Early Warning System | Smart and Effective Protection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-image: url(images/photo_2025-03-17_05-12-08.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background-color: rgba(51, 51, 51, 0.8);
+            color: white;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        
+        .nav-items {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .notification-icon {
+            position: relative;
+            margin-left: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff4d4d;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .notification-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: white;
+            color: #333;
+            width: 300px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .notification-dropdown.show {
+            display: block;
+        }
+        
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+        
+        .notification-item.unread {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        header {
+            color: rgb(0, 0, 0);
+            padding: 20px 0;
+            margin-top: 60px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+        }
+        
+        p {
+            font-size: 1.2rem;
+        }
+        
+        .container {
+            padding: 20px;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            margin: 10px;
+        }
+        
+        .feature h2 {
+            color: #ff4d4d;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            margin-top: 30px;
+        }
+        
+        /* تنسيق الصور */
+        #mainImage {
+            cursor: pointer;
+            margin-top: 20px;
+            width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #otherImages {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        #otherImages img {
+            cursor: pointer;
+            margin: 10px;
+            width: 150px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature {
+                width: 80%;
+            }
+            
+            .notification-dropdown {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">FireSensor</div>
+        <div class="nav-items">
+            <div class="notification-icon" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCounter">0</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-item">لا توجد إشعارات حالياً</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header>
+        <h1>FireSensor</h1>
+        <p>Fire Early Warning System | Smart and Effective Protection</p>
+    </header>
+
+    <!-- الصورة الرئيسية -->
+    <img id="mainImage" src="images/photo_2025-03-17_04-50-23.jpg" alt="صورة رئيسية" onclick="showOtherImages()">
+
+    <!-- الصور الثلاثة الأخرى (مخفية في البداية) -->
+    <div id="otherImages">
+        <a href="sensor.html"><img src="images/photo_2025-03-17_04-50-42.jpg" alt="الطابق الثالث"></a>
+        <a href="sensor.html"><img src="images/photo_2025-03-17_04-50-46.jpg" alt="الطابق الثاني"></a>
+        <a href="sensor.html"><img src="images/photo_2025-03-17_04-50-52.jpg" alt="الطابق الأول"></a>
+    </div>
+
+    <div class="container">
+        <h2>Our features</h2>
+        <div class="features">
+            <div class="feature">
+                <h2>🚨immediate alert</h2>
+                <p>A fast and effective alarm system to detect fires as quickly as possible.</p>
+            </div>
+            <div class="feature">
+                <h2>📱remote monitoring</h2>
+                <p>Ability to monitor the system through a smartphone application.</p>
+            </div>
+            <div class="feature">
+                <h2>🔧Easy installation</h2>
+                <p>Simple and quick installation without the need for complex modifications.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p></p>
+    </footer>
+
+    <script>
+        // دالة لعرض/إخفاء الإشعارات
+        function toggleNotifications() {
+            document.getElementById('notificationDropdown').classList.toggle('show');
+        }
+        
+        // دالة لإظهار الصور الثلاثة
+        function showOtherImages() {
+            document.getElementById('otherImages').style.display = 'block';
+        }
+        
+        // دالة لجلب الإشعارات من API (مثال)
+        function fetchNotifications() {
+            // هذه بيانات وهمية للاختبار، استبدلها بالاتصال بالAPI الحقيقي
+            const mockNotifications = [
+                {
+                    message: "حريق في الطابق الأول!",
+                    read: false,
+                    timestamp: new Date()
+                },
+                {
+                    message: "درجة الحرارة مرتفعة في الطابق الثالث",
+                    read: true,
+                    timestamp: new Date(Date.now() - 3600000)
+                }
+            ];
+            
+            updateNotificationsUI(mockNotifications);
+        }
+        
+        // دالة لتحديث واجهة الإشعارات
+        function updateNotificationsUI(notifications) {
+            const counter = document.getElementById('notificationCounter');
+            const dropdown = document.getElementById('notificationDropdown');
+            
+            // تحديث العداد
+            const unreadCount = notifications.filter(n => !n.read).length;
+            counter.textContent = unreadCount;
+            
+            // تحديث قائمة الإشعارات
+            if(notifications.length === 0) {
+                dropdown.innerHTML = '<div class="notification-item">لا توجد إشعارات حالياً</div>';
+                return;
+            }
+            
+            dropdown.innerHTML = '';
+            notifications.forEach(notification => {
+                const item = document.createElement('div');
+                item.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                item.innerHTML = `
+                    <div>${notification.message}</div>
+                    <div class="notification-time">${formatTime(notification.timestamp)}</div>
+                `;
+                dropdown.appendChild(item);
+            });
+        }
+        
+        // دالة لتنسيق الوقت
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('ar-EG');
+        }
+        
+        // جلب الإشعارات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchNotifications();
+            
+            // جلب الإشعارات كل 30 ثانية (يمكن تغيير الفترة)
+            setInterval(fetchNotifications, 30000);
+        });
+        
+        // إغلاق الإشعارات عند النقر خارجها
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.notification-icon') && !event.target.closest('.notification-icon')) {
+                const dropdown = document.getElementById("notificationDropdown");
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+</body>
+</html>

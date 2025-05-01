@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج الاتصال مع الخريطة</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            background-attachment: fixed;
+            background-image: url(../images/00000.png);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="url"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .location-info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <form id="contactForm" action="https://formsubmit.co/abdelrahmanmohamedali97@gmail.com" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_subject" value="رسالة جديدة من النموذج">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://yourwebsite.com/thanks.html">
+            
+            <div class="form-group">
+                <label for="name">الاسم الكامل:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">رقم التليفون:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="details">التفاصيل:</label>
+                <textarea id="details" name="details" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">صورة (اختيارية):</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label>موقعك الحالي:</label>
+                <div id="map"></div>
+                <div class="location-info">
+                    <p id="locationText">جاري تحديد موقعك...</p>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <input type="hidden" id="address" name="address">
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                جاري إرسال البيانات...
+            </div>
+            
+            <button type="submit" id="submitBtn">إرسال</button>
+        </form>
+        
+        <div id="successMessage" class="success-message">
+            تم إرسال المعلومات بنجاح! شكرًا لتواصلك معنا.
+        </div>
+        
+        <div id="errorMessage" class="error-message">
+            حدث خطأ أثناء إرسال المعلومات. يرجى المحاولة مرة أخرى.
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // تهيئة الخريطة
+        let map = L.map('map').setView([0, 0], 2);
+        let marker = null;
+        let userLocation = null;
+        
+        // إضافة طبقة الخريطة
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // تحديد الموقع تلقائياً
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // تحديث الخريطة لتركز على موقع المستخدم
+                    map.setView([userLocation.lat, userLocation.lng], 15);
+                    
+                    // إضافة علامة على الموقع
+                    marker = L.marker([userLocation.lat, userLocation.lng]).addTo(map)
+                        .bindPopup("موقعك الحالي").openPopup();
+                    
+                    // تحديث الحقول المخفية
+                    document.getElementById('latitude').value = userLocation.lat;
+                    document.getElementById('longitude').value = userLocation.lng;
+                    
+                    // الحصول على عنوان تقريبي
+                    getAddress(userLocation.lat, userLocation.lng);
+                },
+                function(error) {
+                    console.error("حدث خطأ في تحديد الموقع:", error);
+                    document.getElementById('locationText').textContent = "تعذر تحديد موقعك. يرجى التأكد من تفعيل خدمة الموقع.";
+                }
+            );
+        } else {
+            document.getElementById('locationText').textContent = "المتصفح لا يدعم خدمة تحديد الموقع.";
+        }
+        
+        // وظيفة للحصول على عنوان من الإحداثيات
+        function getAddress(lat, lng) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.display_name || "عنوان غير معروف";
+                    document.getElementById('locationText').textContent = `موقعك: ${address}`;
+                    document.getElementById('address').value = address;
+                })
+                .catch(error => {
+                    console.error("حدث خطأ في جلب العنوان:", error);
+                    document.getElementById('locationText').textContent = `الإحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    document.getElementById('address').value = `الإحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                });
+        }
+        
+        // إرسال النموذج
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            
+            if (!userLocation) {
+                alert("الرجاء الانتظار حتى يتم تحديد موقعك");
+                e.preventDefault();
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

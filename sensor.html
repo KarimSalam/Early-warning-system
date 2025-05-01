@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Detection System</title>
+    <link rel="stylesheet" href="sensor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-fire"></i>Fire Detection System</h1>
+
+        <div class="dashboard">
+            <!-- درجة الحرارة -->
+            <div class="sensor-card">
+                <h2><i class="fas fa-thermometer-half"></i>temperature</h2>
+                <div class="sensor-value" id="tempValue">--</div>
+                <div class="sensor-status" id="tempStatus">--</div>
+            </div>
+
+            <!-- الرطوبة -->
+            <div class="sensor-card">
+                <h2><i class="fas fa-tint"></i>Humidity</h2>
+                <div class="sensor-value" id="humidityValue">--</div>
+                <div class="sensor-status" id="humidityStatus">--</div>
+            </div>
+
+            <!-- مستوى الدخان -->
+            <div class="sensor-card">
+                <h2><i class="fas fa-smog"></i>Smoke level</h2>
+                <div class="sensor-value" id="smokeValue">--</div>
+                <div class="sensor-status" id="smokeStatus">--</div>
+            </div>
+
+            <!-- أول أكسيد الكربون -->
+            <div class="sensor-card">
+                <h2><i class="fas fa-skull-crossbones"></i>carbon monoxide</h2>
+                <div class="sensor-value" id="carbonMonoxideValue">--</div>
+                <div class="sensor-status" id="carbonMonoxideStatus">--</div>
+            </div>
+
+            <!-- كشف اللهب -->
+            <div class="sensor-card">
+                <h2><i class="fas fa-fire"></i>Flame detection</h2>
+                <div class="sensor-status" id="flameStatus">--</div>
+            </div>
+        </div>
+
+        <!-- الرسم البياني -->
+        <div class="chart-container">
+            <h2><i class="fas fa-chart-line"></i>temperature change</h2>
+            <canvas id="temperatureChart"></canvas>
+        </div>
+
+        <!-- حالة الاتصال -->
+        <div class="connection-status" id="connectionStatus">
+            <i class="fas fa-circle"></i>
+            <span>Calling...</span>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sensor.js"></script>
+</body>
+</html>

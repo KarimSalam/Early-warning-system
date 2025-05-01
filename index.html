@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>KarimSalam &amp; EARLY WARNING SYSTEM</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+  <header>
+    <nav class="navbar"> <!--start navbar-->
+      <span class="hamburger-btn material-symbols-rounded">menu</span>
+      <a href="#" class="logo">
+        <img src="images/EARLY WARNING SYSTEM without background.png" alt="logo">
+        <h2>EARLY WARNING SYSTEM</h2>
+      </a>
+      <ul class="links">
+        <span class="close-btn material-symbols-rounded">X</span>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="#">DISASTERS</a></li>
+        <li><a href="UPDATES.html">UPDATES</a></li>
+        <li><a href="#">NEWS</a></li>
+        <li><a href="notices.html">NOTICES</a></li>
+        <li><a href="massage.html">MESSAGES</a></li>
+      </ul>
+      
+    </nav>
+  </header>
+  <!--end navbar-->
+
+  
+
+  <!-- Start Cards -->
+  <div class="team">
+    <div class="team-area">
+      <div class="single-team">
+        <img src="images/man_made_.png" alt="">
+        <div class="info">
+          <h3>Man-Made Disasters</h3>
+          <p>Man-made disasters have an element of human intent, negligence, or error involving a failure of a man-made system, as opposed to natural disasters resulting from natural hazards. Such man-made disasters are crime, arson, civil disorder, terrorism, war, biological/chemical threat, cyber-attacks, etc.</p>
+          <a href="fire.html"> <button class="card__button2">Click me</button></a>
+        </div>
+      </div>
+
+      <div class="single-team">
+        <img src="images/natural_.png" alt="">
+        <div class="info">
+          <h3>Natural Disaster</h3>
+          <p>A natural disaster is the very harmful impact on a society or community after a natural hazard event. Some examples of natural hazard events include avalanches, droughts, earthquakes, floods, heat waves, landslides, tropical cyclones, volcanic activity and wildfires.</p>
+          <a href="ahmed.html"> <button class="card__button2">Click me</button></a>
+        </div>
+      </div>
+
+      <div class="single-team">
+        <img src="images/crisis.png" alt="">
+        <div class="info">
+          <h3>Crisis</h3>
+          <p>A crisis is a period of intense difficulty or danger that requires immediate attention. It is a time when a situation has become unstable or dangerous, and the usual ways of coping are no longer effective. Crises can be caused by a variety of factors, including natural disasters, accidents, economic downturns, political instability, and personal tragedies.</p>
+          <button class="card__button3">Click me</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end cards -->
+
+  <!-- START map -->
+  <div id="map" style="height: 500px; width: 100%; margin: 20px 0;"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // تهيئة الخريطة
+    const map = L.map('map').setView([30.0444, 31.2357], 15); // إحداثيات القاهرة كمثال
+
+    // إضافة طبقة الخريطة
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // تحديد مواقع الأجهزة
+    const devices = [
+      { name: "جهاز 1", coords: [30.0444, 31.2200], status: "flood" },
+      { name: "جهاز 2", coords: [30.0400, 31.2260], status: "normal" }
+    ];
+
+    devices.forEach(device => {
+      const marker = L.circleMarker(device.coords, {
+        radius: 10,
+        fillColor: device.status === "flood" ? "red" : "green",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).addTo(map);
+
+      marker.bindPopup(`<b>${device.name}</b><br>الحالة: ${device.status === "flood" ? "فيضان" : "طبيعي"}`);
+    });
+
+    // تحديث حالة النظام
+    const fireStatusElement = document.getElementById('fire-status');
+    const temperatureElement = document.getElementById('temperature');
+    const humidityElement = document.getElementById('humidity');
+
+    function updateStatus() {
+      const hasFire = devices.some(device => device.status === "fire");
+      if (fireStatusElement) {
+        fireStatusElement.textContent = hasFire ? "تحذير: حريق مكتشف!" : "لا يوجد حريق";
+        fireStatusElement.style.color = hasFire ? "red" : "green";
+      }
+    }
+
+    updateStatus();
+  </script>
+  <!-- end map -->
+
+  <!-- START footer -->
+  <footer class="footer">
+    <div class="con_footer">
+      <div class="row">
+        <div class="footer-col">
+          <h4>company</h4>
+          <ul>
+            <li><a href="#">about us</a></li>
+            <li><a href="#">our services</a></li>
+            <li><a href="#">privacy policy</a></li>
+            <li><a href="#">affiliate program</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>get help</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">V 0.1</a></li>
+            <li><a href="#">MAP</a></li>
+            <li><a href="#">MODEL</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>team</h4>
+          <ul>
+            <li><a href="#">karim</a></li>
+            <li><a href="#">ahmed samir</a></li>
+            <li><a href="#">ahmed ibrahim</a></li>
+            <li><a href="#">abdalrahman</a></li>
+            <li><a href="#">reem</a></li>
+            <li><a href="#">taha</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>follow us</h4>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- end footer -->
+
+  <script src="home.js"></script>
+</body>
+
+</html>
